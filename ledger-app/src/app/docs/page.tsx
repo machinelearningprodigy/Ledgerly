@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { Footer } from '@/components/layout/Footer';
 import { toast } from 'sonner';
 
 type ActiveSection = 'overview' | 'concurrency' | 'schema' | 'api' | 'errors' | 'sandbox';
@@ -924,6 +925,8 @@ export default function DocumentationPage() {
           )}
 
         </main>
+
+        <Footer />
       </div>
     </div>
   );

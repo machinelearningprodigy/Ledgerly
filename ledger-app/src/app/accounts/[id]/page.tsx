@@ -18,6 +18,7 @@ import { CreateAccountModal } from '@/components/accounts/CreateAccountModal';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { UserAvatar } from '@/components/UserAvatar';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { Footer } from '@/components/layout/Footer';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { Account, Transaction, PaginationMeta } from '@/types';
 import { toast } from 'sonner';
@@ -316,6 +317,8 @@ export default function AccountDetailPage() {
             </CardContent>
           </Card>
         </main>
+
+        <Footer />
       </div>
 
       <CreateAccountModal open={showCreate} onClose={() => setShowCreate(false)} onCreated={refresh} />

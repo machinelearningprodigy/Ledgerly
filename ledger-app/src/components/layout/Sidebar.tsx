@@ -228,14 +228,14 @@ export function Sidebar({
       <div className="p-4 border-t border-zinc-100 dark:border-zinc-900 flex items-center justify-between">
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center text-white text-xs font-bold">
-            OP
+            RM
           </div>
           <div className="min-w-0">
             <p className="text-zinc-900 dark:text-white text-xs font-semibold truncate">
-              Ledger Operator
+              Rahul Mishra
             </p>
             <p className="text-zinc-400 dark:text-zinc-500 text-[10px]">
-              Full Access
+              Ledger Operator
             </p>
           </div>
         </div>
