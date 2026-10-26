@@ -7,9 +7,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+import { AccountSelect } from '@/components/accounts/AccountSelect';
 import { toast } from 'sonner';
 import { Loader2, ArrowRight, AlertCircle } from 'lucide-react';
 import type { Account } from '@/types';
@@ -159,40 +157,27 @@ export function TransferModal({ open, onClose, accounts, defaultFromId, onTransf
           {/* From Account */}
           <div className="space-y-1.5">
             <Label className="text-slate-300 text-sm">From Account</Label>
-            <Select value={form.from_account_id} onValueChange={(v: string | null) => set('from_account_id', v ?? '')} disabled={loading}>
-              <SelectTrigger className="bg-slate-800 border-slate-700 text-white focus:ring-indigo-500">
-                <SelectValue placeholder="Select source account…" />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700">
-                {allAccounts.map(a => (
-                  <SelectItem key={a.id} value={a.id} className="text-white focus:bg-slate-700 focus:text-white">
-                    <span className="font-medium">{a.name}</span>
-                    <span className="text-slate-400 ml-2 tabular-nums">{formatCurrency(Number(a.balance))}</span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <AccountSelect
+              value={form.from_account_id}
+              onChange={id => set('from_account_id', id)}
+              accounts={allAccounts}
+              placeholder="Select source account…"
+              disabled={loading}
+            />
             {errors.from_account_id && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.from_account_id}</p>}
           </div>
 
           {/* To Account */}
           <div className="space-y-1.5">
             <Label className="text-slate-300 text-sm">To Account</Label>
-            <Select value={form.to_account_id} onValueChange={(v: string | null) => set('to_account_id', v ?? '')} disabled={loading}>
-              <SelectTrigger className="bg-slate-800 border-slate-700 text-white focus:ring-indigo-500">
-                <SelectValue placeholder="Select destination account…" />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700">
-                {allAccounts
-                  .filter(a => a.id !== form.from_account_id)
-                  .map(a => (
-                    <SelectItem key={a.id} value={a.id} className="text-white focus:bg-slate-700 focus:text-white">
-                      <span className="font-medium">{a.name}</span>
-                      <span className="text-slate-400 ml-2 tabular-nums">{formatCurrency(Number(a.balance))}</span>
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+            <AccountSelect
+              value={form.to_account_id}
+              onChange={id => set('to_account_id', id)}
+              accounts={allAccounts}
+              excludeId={form.from_account_id}
+              placeholder="Select destination account…"
+              disabled={loading}
+            />
             {errors.to_account_id && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.to_account_id}</p>}
           </div>
 
