@@ -19,7 +19,9 @@ export interface Transaction {
 
 export interface PaginationMeta {
   page: number;
+  current_page?: number;
   limit: number;
+  page_size?: number;
   total_records: number;
   total_pages: number;
 }

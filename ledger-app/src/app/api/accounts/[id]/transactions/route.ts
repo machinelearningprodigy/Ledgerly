@@ -63,7 +63,9 @@ export async function GET(
       data,
       pagination: {
         page,
+        current_page:  page,
         limit,
+        page_size:     limit,
         total_records: count ?? 0,
         total_pages:   Math.ceil((count ?? 0) / limit),
       },

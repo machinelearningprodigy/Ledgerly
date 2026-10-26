@@ -27,7 +27,12 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ data });
+    return NextResponse.json({
+      data: {
+        ...data,
+        account_id: data.id,
+      },
+    });
   } catch (err) {
     return handleApiError(err);
   }
