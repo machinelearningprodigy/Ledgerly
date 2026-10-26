@@ -18,11 +18,24 @@ import { toast } from 'sonner';
 
 export default function DashboardPage() {
   const [accounts, setAccounts]         = useState<Account[]>([]);
+  const [allAccounts, setAllAccounts]   = useState<Account[]>([]);
   const [pagination, setPagination]     = useState<PaginationMeta | null>(null);
   const [loading, setLoading]           = useState(true);
   const [currentPage, setCurrentPage]   = useState(1);
   const [showCreate, setShowCreate]     = useState(false);
   const [showTransfer, setShowTransfer] = useState(false);
+
+  const fetchGlobalStats = useCallback(async () => {
+    try {
+      const res = await fetch('/api/accounts?limit=100');
+      const json = await res.json();
+      if (res.ok && json.data) {
+        setAllAccounts(json.data);
+      }
+    } catch {
+      // non-critical
+    }
+  }, []);
 
   const fetchAccounts = useCallback(async (page = 1) => {
     setLoading(true);
@@ -40,10 +53,19 @@ export default function DashboardPage() {
     }
   }, []);
 
-  useEffect(() => { fetchAccounts(); }, [fetchAccounts]);
+  useEffect(() => {
+    fetchAccounts();
+    fetchGlobalStats();
+  }, [fetchAccounts, fetchGlobalStats]);
 
-  const totalBalance = accounts.reduce((s, a) => s + Number(a.balance), 0);
-  const positiveAccounts = accounts.filter(a => Number(a.balance) > 0).length;
+  const refreshAll = (page = currentPage) => {
+    fetchAccounts(page);
+    fetchGlobalStats();
+  };
+
+  const statsPool = allAccounts.length > 0 ? allAccounts : accounts;
+  const totalBalance = statsPool.reduce((s, a) => s + Number(a.balance), 0);
+  const positiveAccounts = statsPool.filter(a => Number(a.balance) > 0).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
@@ -99,7 +121,7 @@ export default function DashboardPage() {
             </div>
             <Button
               variant="ghost" size="sm"
-              onClick={() => fetchAccounts(currentPage)}
+              onClick={() => refreshAll(currentPage)}
               disabled={loading}
               className="text-slate-400 hover:text-white"
             >
@@ -149,8 +171,8 @@ export default function DashboardPage() {
         </section>
       </main>
 
-      <CreateAccountModal open={showCreate} onClose={() => setShowCreate(false)} onCreated={() => fetchAccounts()} />
-      <TransferModal open={showTransfer} onClose={() => setShowTransfer(false)} accounts={accounts} onTransferred={() => fetchAccounts(currentPage)} />
+      <CreateAccountModal open={showCreate} onClose={() => setShowCreate(false)} onCreated={() => refreshAll(1)} />
+      <TransferModal open={showTransfer} onClose={() => setShowTransfer(false)} accounts={statsPool} onTransferred={() => refreshAll(currentPage)} />
     </div>
   );
 }
