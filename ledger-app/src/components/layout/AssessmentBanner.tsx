@@ -23,7 +23,7 @@ export function AssessmentBanner() {
   );
 
   return (
-    <div className="w-full bg-zinc-100 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 overflow-hidden py-1.5 select-none relative z-50">
+    <div className="w-auto lg:ml-64 bg-zinc-100 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 overflow-hidden py-1.5 select-none relative z-20">
       <div className="animate-marquee whitespace-nowrap">
         {message}
         {message}

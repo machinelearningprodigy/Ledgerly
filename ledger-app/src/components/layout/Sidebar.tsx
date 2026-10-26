@@ -249,7 +249,7 @@ export function Sidebar({
   return (
     <>
       {/* Desktop Persistent Sidebar */}
-      <aside className="hidden lg:block w-64 h-screen fixed inset-y-0 left-0 z-30">
+      <aside className="hidden lg:block w-64 h-screen fixed inset-y-0 left-0 z-40">
         {sidebarContent}
       </aside>
 
