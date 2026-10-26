@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import {
   Plus, ArrowRightLeft, TrendingUp, TrendingDown,
-  Wallet, Users, RefreshCw, Flame, ChevronRight
+  Wallet, Users, RefreshCw, Flame, ChevronRight, Menu
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -14,6 +14,7 @@ import { CreateAccountModal } from '@/components/accounts/CreateAccountModal';
 import { TransferModal } from '@/components/transactions/TransferModal';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { UserAvatar } from '@/components/UserAvatar';
+import { Sidebar } from '@/components/layout/Sidebar';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { Account, PaginationMeta } from '@/types';
 import { toast } from 'sonner';
@@ -26,6 +27,7 @@ export default function DashboardPage() {
   const [currentPage, setCurrentPage]   = useState(1);
   const [showCreate, setShowCreate]     = useState(false);
   const [showTransfer, setShowTransfer] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const fetchGlobalStats = useCallback(async () => {
     try {
@@ -71,113 +73,130 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100 transition-colors duration-200">
-      {/* ── Header ── */}
-      <header className="sticky top-0 z-50 border-b border-zinc-200 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center shadow-lg shadow-red-600/25">
-              <Flame className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-zinc-900 dark:text-white font-bold text-lg leading-none tracking-tight">Ledgerly</h1>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-600/10 dark:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20">
-                  BLACK-RED
-                </span>
+      {/* ── Complete Sidebar ── */}
+      <Sidebar
+        onOpenCreate={() => setShowCreate(true)}
+        onOpenTransfer={() => setShowTransfer(true)}
+        quickAccounts={statsPool}
+        isMobileOpen={mobileMenuOpen}
+        onCloseMobile={() => setMobileMenuOpen(false)}
+      />
+
+      {/* ── Main View (Offset for desktop sidebar) ── */}
+      <div className="lg:pl-64 flex flex-col min-h-screen">
+        {/* ── Header ── */}
+        <header className="sticky top-0 z-20 border-b border-zinc-200 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(true)}
+                className="lg:hidden p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                aria-label="Open navigation menu"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center shadow-lg shadow-red-600/25 lg:hidden">
+                <Flame className="w-5 h-5 text-white" />
               </div>
-              <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-0.5">Transaction Ledger System</p>
+              <div>
+                <h1 className="text-zinc-900 dark:text-white font-bold text-lg leading-none tracking-tight">Accounts Directory</h1>
+                <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-0.5">Real-time ledger overview</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <ThemeToggle className="lg:hidden" />
+              <Button
+                variant="outline" size="sm"
+                onClick={() => setShowTransfer(true)}
+                className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 hover:border-red-300 dark:hover:border-red-900/50 hover:text-red-600 dark:hover:text-red-400 hidden sm:flex shadow-sm"
+              >
+                <ArrowRightLeft className="w-4 h-4 mr-2 text-red-500" />Transfer
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setShowCreate(true)}
+                className="bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/25 active:scale-[0.98]"
+              >
+                <Plus className="w-4 h-4 mr-1.5" />New Account
+              </Button>
             </div>
           </div>
-          <div className="flex items-center gap-2.5">
-            <ThemeToggle />
-            <Button
-              variant="outline" size="sm"
-              onClick={() => setShowTransfer(true)}
-              className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 hover:border-red-300 dark:hover:border-red-900/50 hover:text-red-600 dark:hover:text-red-400 hidden sm:flex shadow-sm"
-            >
-              <ArrowRightLeft className="w-4 h-4 mr-2 text-red-500" />Transfer
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => setShowCreate(true)}
-              className="bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/25 active:scale-[0.98]"
-            >
-              <Plus className="w-4 h-4 mr-1.5" />New Account
-            </Button>
-          </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 flex-1 w-full">
 
-        {/* ── Stats ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard icon={<Users className="w-4 h-4" />}       label="Total Accounts"  value={loading ? null : String(pagination?.total_records ?? accounts.length)} color="red" />
-          <StatCard icon={<Wallet className="w-4 h-4" />}      label="Total Balance"   value={loading ? null : formatCurrency(totalBalance)}                          color="emerald" />
-          <StatCard icon={<TrendingUp className="w-4 h-4" />}  label="Avg Balance"     value={loading ? null : accounts.length ? formatCurrency(totalBalance / (allAccounts.length || accounts.length)) : '₹0.00'} color="rose" />
-          <StatCard icon={<TrendingDown className="w-4 h-4" />} label="Funded Accounts" value={loading ? null : String(positiveAccounts)} color="amber" />
-        </div>
-
-        {/* ── Accounts Grid ── */}
-        <section>
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h2 className="text-zinc-900 dark:text-white font-bold text-xl tracking-tight">Accounts Directory</h2>
-              {pagination && (
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-0.5">{pagination.total_records} account{pagination.total_records !== 1 ? 's' : ''} total</p>
-              )}
-            </div>
-            <Button
-              variant="ghost" size="sm"
-              onClick={() => refreshAll(currentPage)}
-              disabled={loading}
-              className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
+          {/* ── Stats ── */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard icon={<Users className="w-4 h-4" />}       label="Total Accounts"  value={loading ? null : String(pagination?.total_records ?? accounts.length)} color="red" />
+            <StatCard icon={<Wallet className="w-4 h-4" />}      label="Total Balance"   value={loading ? null : formatCurrency(totalBalance)}                          color="emerald" />
+            <StatCard icon={<TrendingUp className="w-4 h-4" />}  label="Avg Balance"     value={loading ? null : accounts.length ? formatCurrency(totalBalance / (allAccounts.length || accounts.length)) : '₹0.00'} color="rose" />
+            <StatCard icon={<TrendingDown className="w-4 h-4" />} label="Funded Accounts" value={loading ? null : String(positiveAccounts)} color="amber" />
           </div>
 
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[...Array(6)].map((_, i) => (
-                <Skeleton key={i} className="h-44 rounded-2xl bg-zinc-200 dark:bg-zinc-900" />
-              ))}
+          {/* ── Accounts Grid ── */}
+          <section>
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="text-zinc-900 dark:text-white font-bold text-xl tracking-tight">Active Ledgers</h2>
+                {pagination && (
+                  <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-0.5">{pagination.total_records} account{pagination.total_records !== 1 ? 's' : ''} enrolled</p>
+                )}
+              </div>
+              <Button
+                variant="ghost" size="sm"
+                onClick={() => refreshAll(currentPage)}
+                disabled={loading}
+                className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
             </div>
-          ) : accounts.length === 0 ? (
-            <EmptyState onCreateClick={() => setShowCreate(true)} />
-          ) : (
-            <>
+
+            {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {accounts.map(acc => <AccountCard key={acc.id} account={acc} />)}
+                {[...Array(6)].map((_, i) => (
+                  <Skeleton key={i} className="h-44 rounded-2xl bg-zinc-200 dark:bg-zinc-900" />
+                ))}
               </div>
-              {pagination && pagination.total_pages > 1 && (
-                <div className="flex items-center justify-center gap-3 mt-8">
-                  <Button
-                    variant="outline" size="sm"
-                    disabled={currentPage <= 1}
-                    onClick={() => fetchAccounts(currentPage - 1)}
-                    className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                  >
-                    Previous
-                  </Button>
-                  <span className="text-zinc-500 dark:text-zinc-400 text-sm tabular-nums">
-                    Page {currentPage} of {pagination.total_pages}
-                  </span>
-                  <Button
-                    variant="outline" size="sm"
-                    disabled={currentPage >= pagination.total_pages}
-                    onClick={() => fetchAccounts(currentPage + 1)}
-                    className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                  >
-                    Next
-                  </Button>
+            ) : accounts.length === 0 ? (
+              <EmptyState onCreateClick={() => setShowCreate(true)} />
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {accounts.map(acc => <AccountCard key={acc.id} account={acc} />)}
                 </div>
-              )}
-            </>
-          )}
-        </section>
-      </main>
+                {pagination && pagination.total_pages > 1 && (
+                  <div className="flex items-center justify-center gap-3 mt-8">
+                    <Button
+                      variant="outline" size="sm"
+                      disabled={currentPage <= 1}
+                      onClick={() => fetchAccounts(currentPage - 1)}
+                      className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-zinc-500 dark:text-zinc-400 text-sm tabular-nums">
+                      Page {currentPage} of {pagination.total_pages}
+                    </span>
+                    <Button
+                      variant="outline" size="sm"
+                      disabled={currentPage >= pagination.total_pages}
+                      onClick={() => fetchAccounts(currentPage + 1)}
+                      className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+          </section>
+        </main>
+      </div>
 
       <CreateAccountModal open={showCreate} onClose={() => setShowCreate(false)} onCreated={() => refreshAll(1)} />
       <TransferModal open={showTransfer} onClose={() => setShowTransfer(false)} accounts={statsPool} onTransferred={() => refreshAll(currentPage)} />
