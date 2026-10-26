@@ -61,15 +61,15 @@ export function CreateAccountModal({ open, onClose, onCreated }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={o => { if (!o) handleClose(); }}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-white sm:max-w-md">
+      <DialogContent className="bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white sm:max-w-md shadow-2xl">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
-              <UserPlus className="w-5 h-5 text-indigo-400" />
+            <div className="w-10 h-10 rounded-xl bg-red-600/15 border border-red-600/30 flex items-center justify-center flex-shrink-0">
+              <UserPlus className="w-5 h-5 text-red-600 dark:text-red-400" />
             </div>
             <div>
-              <DialogTitle className="text-white text-lg">Create New Account</DialogTitle>
-              <DialogDescription className="text-slate-400 text-xs mt-0.5">
+              <DialogTitle className="text-zinc-900 dark:text-white text-lg font-bold">Create New Account</DialogTitle>
+              <DialogDescription className="text-zinc-500 dark:text-zinc-400 text-xs mt-0.5">
                 Balance is initialised at ₹0.00 automatically.
               </DialogDescription>
             </div>
@@ -78,31 +78,32 @@ export function CreateAccountModal({ open, onClose, onCreated }: Props) {
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           <div className="space-y-2">
-            <Label htmlFor="acct-name" className="text-slate-300 text-sm">Account Holder Name</Label>
+            <Label htmlFor="acct-name" className="text-zinc-700 dark:text-zinc-300 text-sm">Account Holder Name</Label>
             <Input
               id="acct-name"
               placeholder="e.g. Alice Johnson"
               value={name}
               onChange={e => { setName(e.target.value); setError(''); }}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-600 focus-visible:ring-indigo-500 focus-visible:border-indigo-500"
+              className="bg-zinc-50 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus-visible:ring-red-600 focus-visible:border-red-600"
               autoFocus
               disabled={loading}
             />
-            {error && <p className="text-red-400 text-xs">{error}</p>}
+            {error && <p className="text-red-500 text-xs">{error}</p>}
           </div>
 
           <div className="flex gap-3 pt-1">
             <Button
               type="button" variant="outline" onClick={handleClose} disabled={loading}
-              className="flex-1 border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
+              className="flex-1 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white"
             >
               Cancel
             </Button>
             <Button
-              type="submit" disabled={loading || !name.trim()}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white"
+              type="submit" disabled={loading}
+              className="flex-1 bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/25 active:scale-[0.98]"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Account'}
+              {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Create Account
             </Button>
           </div>
         </form>

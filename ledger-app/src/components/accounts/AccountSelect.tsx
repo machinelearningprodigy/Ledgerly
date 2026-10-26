@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check, Wallet, User } from 'lucide-react';
 import type { Account } from '@/types';
 import { formatCurrency } from '@/lib/utils';
+import { UserAvatar } from '@/components/UserAvatar';
 
 interface Props {
   value: string;
@@ -70,44 +71,42 @@ export function AccountSelect({
         onClick={() => setIsOpen(prev => !prev)}
         className={`w-full flex items-center justify-between gap-3 h-12 px-3.5 rounded-xl border text-left transition-all outline-none ${
           disabled
-            ? 'opacity-50 cursor-not-allowed bg-slate-800/40 border-slate-700/50'
+            ? 'opacity-50 cursor-not-allowed bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800'
             : isOpen
-            ? 'border-indigo-500 bg-slate-800 ring-2 ring-indigo-500/20'
-            : 'border-slate-700 bg-slate-800/90 hover:border-slate-600 hover:bg-slate-800'
+            ? 'border-red-600 bg-white dark:bg-zinc-900 ring-2 ring-red-600/20 shadow-sm'
+            : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 hover:border-zinc-300 dark:hover:border-zinc-700 shadow-sm'
         }`}
       >
         {selected ? (
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 font-bold text-xs flex-shrink-0">
-              {selected.name.slice(0, 2).toUpperCase()}
-            </div>
-            <span className="text-white text-sm font-medium truncate">
+            <UserAvatar name={selected.name} id={selected.id} size="sm" />
+            <span className="text-zinc-900 dark:text-white text-sm font-medium truncate">
               {selected.name}
             </span>
-            <span className="ml-auto mr-1 text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 tabular-nums flex-shrink-0">
+            <span className="ml-auto mr-1 text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 tabular-nums flex-shrink-0">
               {formatCurrency(Number(selected.balance))}
             </span>
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-slate-400 text-sm">
-            <User className="w-4 h-4 text-slate-500" />
+          <div className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500 text-sm">
+            <User className="w-4 h-4 text-zinc-400" />
             <span>{placeholder}</span>
           </div>
         )}
 
         <ChevronDown
-          className={`w-4 h-4 text-slate-400 transition-transform duration-200 flex-shrink-0 ${
-            isOpen ? 'rotate-180 text-indigo-400' : ''
+          className={`w-4 h-4 text-zinc-400 dark:text-zinc-500 transition-transform duration-200 flex-shrink-0 ${
+            isOpen ? 'rotate-180 text-red-600' : ''
           }`}
         />
       </button>
 
       {/* Floating Dropdown List */}
       {isOpen && (
-        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 w-full min-w-[280px] max-h-64 overflow-y-auto rounded-xl border border-slate-700 bg-slate-900/95 p-1.5 shadow-2xl backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-150">
+        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 w-full min-w-[280px] max-h-64 overflow-y-auto rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 p-1.5 shadow-2xl backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-150">
           {availableAccounts.length === 0 ? (
-            <div className="py-6 px-4 text-center text-slate-400 text-sm">
-              <Wallet className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+            <div className="py-6 px-4 text-center text-zinc-500 text-sm">
+              <Wallet className="w-8 h-8 text-zinc-400 dark:text-zinc-600 mx-auto mb-2" />
               No accounts available
             </div>
           ) : (
@@ -122,24 +121,18 @@ export function AccountSelect({
                     onClick={() => handleSelect(account.id)}
                     className={`w-full flex items-center justify-between gap-3 p-2.5 rounded-lg text-left transition-colors group ${
                       isSelected
-                        ? 'bg-indigo-600/20 text-white border border-indigo-500/40'
-                        : 'hover:bg-slate-800 text-slate-200 border border-transparent'
+                        ? 'bg-red-600/10 dark:bg-red-600/20 text-zinc-900 dark:text-white border border-red-500/30'
+                        : 'hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border border-transparent'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 ${
-                        isSelected
-                          ? 'bg-indigo-600 text-white shadow-md'
-                          : 'bg-indigo-500/15 border border-indigo-500/25 text-indigo-300'
-                      }`}>
-                        {account.name.slice(0, 2).toUpperCase()}
-                      </div>
+                      <UserAvatar name={account.name} id={account.id} size="sm" />
                       <div className="min-w-0 flex-1">
-                        <p className="text-white text-sm font-semibold truncate leading-tight">
+                        <p className="text-zinc-900 dark:text-white text-sm font-semibold truncate leading-tight">
                           {account.name}
                         </p>
-                        <p className="text-slate-500 text-[11px] font-mono truncate mt-0.5">
-                          ID: {account.id.split('-')[0]}…
+                        <p className="text-zinc-400 dark:text-zinc-500 text-xs font-mono truncate">
+                          {account.id.split('-')[0]}…
                         </p>
                       </div>
                     </div>
@@ -147,13 +140,13 @@ export function AccountSelect({
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <span className={`text-xs font-semibold px-2 py-0.5 rounded-md tabular-nums ${
                         balance > 0
-                          ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
-                          : 'bg-slate-800 text-slate-400'
+                          ? 'bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400'
+                          : 'bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400'
                       }`}>
                         {formatCurrency(balance)}
                       </span>
                       {isSelected && (
-                        <Check className="w-4 h-4 text-indigo-400 flex-shrink-0" />
+                        <Check className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0" />
                       )}
                     </div>
                   </button>

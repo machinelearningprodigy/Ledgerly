@@ -9,9 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AccountSelect } from '@/components/accounts/AccountSelect';
 import { toast } from 'sonner';
-import { Loader2, ArrowRight, AlertCircle } from 'lucide-react';
+import { Loader2, ArrowRight, AlertCircle, ArrowRightLeft } from 'lucide-react';
 import type { Account } from '@/types';
 import { formatCurrency } from '@/lib/utils';
+import { UserAvatar } from '@/components/UserAvatar';
 
 interface Props {
   open:           boolean;
@@ -127,36 +128,49 @@ export function TransferModal({ open, onClose, accounts, defaultFromId, onTransf
 
   return (
     <Dialog open={open} onOpenChange={o => { if (!o) handleClose(); }}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-white sm:max-w-md">
+      <DialogContent className="bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white sm:max-w-md shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-white text-lg">Transfer Funds</DialogTitle>
-          <DialogDescription className="text-slate-400 text-sm">
-            Atomically move money between two accounts.
-          </DialogDescription>
+          <div className="flex items-center gap-3 mb-1">
+            <div className="w-10 h-10 rounded-xl bg-red-600/15 border border-red-600/30 flex items-center justify-center flex-shrink-0">
+              <ArrowRightLeft className="w-5 h-5 text-red-600 dark:text-red-400" />
+            </div>
+            <div>
+              <DialogTitle className="text-zinc-900 dark:text-white text-lg font-bold">Transfer Funds</DialogTitle>
+              <DialogDescription className="text-zinc-500 dark:text-zinc-400 text-xs">
+                Atomically move money between two accounts.
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
 
-          {/* Preview bar */}
+          {/* Preview bar with avatars */}
           {(fromAccount || toAccount) && (
-            <div className="flex items-center gap-2 p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
-              <div className="flex-1 min-w-0 text-center">
-                <p className="text-slate-500 text-xs mb-0.5">From</p>
-                <p className="text-white text-sm font-semibold truncate">{fromAccount?.name ?? '—'}</p>
-                {fromAccount && <p className="text-emerald-400 text-xs tabular-nums">{formatCurrency(Number(fromAccount.balance))}</p>}
+            <div className="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-900/80 rounded-xl border border-zinc-200 dark:border-zinc-800/80">
+              <div className="flex-1 min-w-0 flex items-center gap-2">
+                {fromAccount && <UserAvatar name={fromAccount.name} id={fromAccount.id} size="sm" />}
+                <div className="min-w-0 flex-1">
+                  <p className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase font-bold tracking-wider">From</p>
+                  <p className="text-zinc-900 dark:text-white text-xs font-semibold truncate">{fromAccount?.name ?? '—'}</p>
+                  {fromAccount && <p className="text-emerald-600 dark:text-emerald-400 text-[11px] tabular-nums">{formatCurrency(Number(fromAccount.balance))}</p>}
+                </div>
               </div>
-              <ArrowRight className="w-5 h-5 text-indigo-400 flex-shrink-0" />
-              <div className="flex-1 min-w-0 text-center">
-                <p className="text-slate-500 text-xs mb-0.5">To</p>
-                <p className="text-white text-sm font-semibold truncate">{toAccount?.name ?? '—'}</p>
-                {toAccount && <p className="text-emerald-400 text-xs tabular-nums">{formatCurrency(Number(toAccount.balance))}</p>}
+              <ArrowRight className="w-4 h-4 text-red-500 flex-shrink-0" />
+              <div className="flex-1 min-w-0 flex items-center gap-2">
+                {toAccount && <UserAvatar name={toAccount.name} id={toAccount.id} size="sm" />}
+                <div className="min-w-0 flex-1">
+                  <p className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase font-bold tracking-wider">To</p>
+                  <p className="text-zinc-900 dark:text-white text-xs font-semibold truncate">{toAccount?.name ?? '—'}</p>
+                  {toAccount && <p className="text-emerald-600 dark:text-emerald-400 text-[11px] tabular-nums">{formatCurrency(Number(toAccount.balance))}</p>}
+                </div>
               </div>
             </div>
           )}
 
           {/* From Account */}
           <div className="space-y-1.5">
-            <Label className="text-slate-300 text-sm">From Account</Label>
+            <Label className="text-zinc-700 dark:text-zinc-300 text-sm">From Account</Label>
             <AccountSelect
               value={form.from_account_id}
               onChange={id => set('from_account_id', id)}
@@ -164,12 +178,12 @@ export function TransferModal({ open, onClose, accounts, defaultFromId, onTransf
               placeholder="Select source account…"
               disabled={loading}
             />
-            {errors.from_account_id && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.from_account_id}</p>}
+            {errors.from_account_id && <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.from_account_id}</p>}
           </div>
 
           {/* To Account */}
           <div className="space-y-1.5">
-            <Label className="text-slate-300 text-sm">To Account</Label>
+            <Label className="text-zinc-700 dark:text-zinc-300 text-sm">To Account</Label>
             <AccountSelect
               value={form.to_account_id}
               onChange={id => set('to_account_id', id)}
@@ -178,65 +192,65 @@ export function TransferModal({ open, onClose, accounts, defaultFromId, onTransf
               placeholder="Select destination account…"
               disabled={loading}
             />
-            {errors.to_account_id && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.to_account_id}</p>}
+            {errors.to_account_id && <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.to_account_id}</p>}
           </div>
 
           {/* Amount */}
           <div className="space-y-1.5">
-            <Label className="text-slate-300 text-sm">Amount (₹)</Label>
+            <Label className="text-zinc-700 dark:text-zinc-300 text-sm">Amount (₹)</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">₹</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 font-medium">₹</span>
               <Input
                 type="number" step="0.01" min="0.01" placeholder="0.00"
                 value={form.amount}
                 onChange={e => set('amount', e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-600 focus-visible:ring-indigo-500 pl-7"
+                className="bg-zinc-50 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus-visible:ring-red-600 pl-7"
                 disabled={loading}
               />
             </div>
-            {errors.amount && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.amount}</p>}
+            {errors.amount && <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.amount}</p>}
           </div>
 
           {/* Description */}
           <div className="space-y-1.5">
-            <Label className="text-slate-300 text-sm">Description</Label>
+            <Label className="text-zinc-700 dark:text-zinc-300 text-sm">Description</Label>
             <Input
               placeholder="e.g. Rent payment"
               value={form.description}
               onChange={e => set('description', e.target.value)}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-600 focus-visible:ring-indigo-500"
+              className="bg-zinc-50 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus-visible:ring-red-600"
               disabled={loading}
             />
-            {errors.description && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.description}</p>}
+            {errors.description && <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.description}</p>}
           </div>
 
           {/* Reference ID */}
           <div className="space-y-1.5">
-            <Label className="text-slate-300 text-sm">
+            <Label className="text-zinc-700 dark:text-zinc-300 text-sm">
               Reference ID
-              <span className="text-slate-600 font-normal ml-2 text-xs">(idempotency key)</span>
+              <span className="text-zinc-400 dark:text-zinc-500 font-normal ml-2 text-xs">(idempotency key)</span>
             </Label>
             <Input
               placeholder="e.g. TRANSFER-001"
               value={form.reference_id}
               onChange={e => set('reference_id', e.target.value)}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-600 focus-visible:ring-indigo-500 font-mono text-sm"
+              className="bg-zinc-50 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus-visible:ring-red-600 font-mono text-sm"
               disabled={loading}
             />
-            {errors.reference_id && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.reference_id}</p>}
+            {errors.reference_id && <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.reference_id}</p>}
           </div>
 
           {/* Actions */}
           <div className="flex gap-3 pt-1">
             <Button
               type="button" variant="outline" onClick={handleClose} disabled={loading}
-              className="flex-1 border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
+              className="flex-1 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white"
             >
               Cancel
             </Button>
             <Button
               type="submit" disabled={loading}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold"
+              className="flex-1 bg-red-600 hover:bg-red-500 text-white font-semibold shadow-md shadow-red-600/25 active:scale-[0.98]"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Transfer Funds'}
             </Button>

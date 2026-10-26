@@ -13,6 +13,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { AddTransactionModal } from '@/components/transactions/AddTransactionModal';
 import { TransferModal } from '@/components/transactions/TransferModal';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { UserAvatar } from '@/components/UserAvatar';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { Account, Transaction, PaginationMeta } from '@/types';
 import { toast } from 'sonner';
@@ -83,31 +85,32 @@ export default function AccountDetailPage() {
   const refresh = () => { fetchAccount(); fetchTransactions(currentPage, filter); };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100 transition-colors duration-200">
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 border-b border-slate-800/60 bg-slate-900/70 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-zinc-200 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
           <button
             onClick={() => router.push('/')}
-            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm"
+            className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 transition-colors text-sm font-medium"
           >
             <ArrowLeft className="w-4 h-4" />Dashboard
           </button>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={refresh} className="text-slate-500 hover:text-white">
+          <div className="flex items-center gap-2.5">
+            <ThemeToggle />
+            <Button variant="ghost" size="sm" onClick={refresh} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
               <RefreshCw className="w-4 h-4" />
             </Button>
             <Button
               variant="outline" size="sm"
               onClick={() => setShowXfer(true)}
-              className="border-slate-700 bg-slate-800/60 text-slate-300 hover:bg-slate-700 hover:text-white hidden sm:flex"
+              className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 hover:border-red-300 dark:hover:border-red-900/50 hover:text-red-600 dark:hover:text-red-400 hidden sm:flex"
             >
-              <ArrowRightLeft className="w-4 h-4 mr-2" />Transfer
+              <ArrowRightLeft className="w-4 h-4 mr-2 text-red-500" />Transfer
             </Button>
             <Button
               size="sm"
               onClick={() => setShowAdd(true)}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white"
+              className="bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/25 active:scale-[0.98]"
             >
               <Plus className="w-4 h-4 mr-1.5" />Add Transaction
             </Button>
@@ -117,36 +120,39 @@ export default function AccountDetailPage() {
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
 
-        {/* ── Account Card ── */}
+        {/* ── Account Hero Card ── */}
         {acctLoading ? (
-          <Skeleton className="h-40 rounded-2xl bg-slate-800/60" />
+          <Skeleton className="h-44 rounded-2xl bg-zinc-200 dark:bg-zinc-900" />
         ) : account ? (
-          <Card className="bg-slate-900/60 border-slate-800/60 backdrop-blur-sm overflow-hidden">
-            {/* Accent bar */}
-            <div className="h-1 w-full bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500" />
+          <Card className="bg-white dark:bg-zinc-950/80 border-zinc-200 dark:border-zinc-800/80 shadow-sm dark:shadow-none backdrop-blur-sm overflow-hidden">
+            {/* Top Crimson Accent bar */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-red-600 via-rose-600 to-red-800" />
             <CardContent className="p-6">
               <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 font-bold text-2xl flex-shrink-0">
-                  {account.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
-                </div>
+                <UserAvatar name={account.name} id={account.id} size="xl" />
                 <div className="flex-1 min-w-0">
-                  <h1 className="text-white text-2xl font-bold truncate">{account.name}</h1>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-zinc-900 dark:text-white text-2xl font-bold truncate">{account.name}</h1>
+                    <Badge variant="outline" className="border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 text-xs">
+                      Active Account
+                    </Badge>
+                  </div>
                   <button
                     onClick={copyId}
-                    className="flex items-center gap-1.5 text-slate-500 hover:text-slate-300 text-xs font-mono mt-1 transition-colors group"
+                    className="flex items-center gap-1.5 text-zinc-400 dark:text-zinc-500 hover:text-red-600 dark:hover:text-red-400 text-xs font-mono mt-1.5 transition-colors group"
                   >
-                    <Hash className="w-3 h-3" />
+                    <Hash className="w-3.5 h-3.5" />
                     <span className="truncate max-w-[280px]">{account.id}</span>
                     {copied
-                      ? <CheckCheck className="w-3 h-3 text-emerald-400 flex-shrink-0" />
-                      : <Copy className="w-3 h-3 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      ? <CheckCheck className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                      : <Copy className="w-3.5 h-3.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                     }
                   </button>
-                  <p className="text-slate-600 text-xs mt-1">Created {formatDate(account.created_at)}</p>
+                  <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-1">Created {formatDate(account.created_at)}</p>
                 </div>
-                <div className="text-left sm:text-right flex-shrink-0">
-                  <p className="text-slate-500 text-xs mb-1">Current Balance</p>
-                  <p className={`text-3xl font-bold tabular-nums ${Number(account.balance) > 0 ? 'text-emerald-400' : 'text-slate-500'}`}>
+                <div className="text-left sm:text-right flex-shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-900">
+                  <p className="text-zinc-400 dark:text-zinc-500 text-xs mb-1 font-medium">Current Balance</p>
+                  <p className={`text-3xl font-extrabold tabular-nums ${Number(account.balance) > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400 dark:text-zinc-500'}`}>
                     {formatCurrency(Number(account.balance))}
                   </p>
                 </div>
@@ -158,16 +164,16 @@ export default function AccountDetailPage() {
         {/* ── Mini Stats ── */}
         <div className="grid grid-cols-3 gap-4">
           {[
-            { icon: <Hash className="w-4 h-4 text-slate-400" />,        bg: 'bg-slate-700',            label: 'Total',    value: pagination ? String(pagination.total_records) : '—' },
-            { icon: <TrendingUp className="w-4 h-4 text-emerald-400" />, bg: 'bg-emerald-500/10 border border-emerald-500/20', label: 'Credits',  value: formatCurrency(transactions.filter(t => t.type === 'credit').reduce((s, t) => s + Number(t.amount), 0)) },
-            { icon: <TrendingDown className="w-4 h-4 text-red-400" />,   bg: 'bg-red-500/10 border border-red-500/20',         label: 'Debits',   value: formatCurrency(transactions.filter(t => t.type === 'debit').reduce((s, t) => s + Number(t.amount), 0)) },
+            { icon: <Hash className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />,        bg: 'bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700', label: 'Total Records', value: pagination ? String(pagination.total_records) : '—' },
+            { icon: <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />, bg: 'bg-emerald-500/10 border border-emerald-500/25', label: 'Credits (Page)',  value: formatCurrency(transactions.filter(t => t.type === 'credit').reduce((s, t) => s + Number(t.amount), 0)) },
+            { icon: <TrendingDown className="w-4 h-4 text-red-600 dark:text-red-400" />,   bg: 'bg-red-500/10 border border-red-500/25',         label: 'Debits (Page)',   value: formatCurrency(transactions.filter(t => t.type === 'debit').reduce((s, t) => s + Number(t.amount), 0)) },
           ].map(({ icon, bg, label, value }) => (
-            <Card key={label} className="bg-slate-900/60 border-slate-800/60">
+            <Card key={label} className="bg-white dark:bg-zinc-950/80 border-zinc-200 dark:border-zinc-800/80 shadow-sm dark:shadow-none">
               <CardContent className="p-4 flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${bg}`}>{icon}</div>
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${bg}`}>{icon}</div>
                 <div className="min-w-0">
-                  <p className="text-slate-500 text-xs">{label}</p>
-                  <p className="text-white font-bold text-sm truncate">{txnLoading ? '…' : value}</p>
+                  <p className="text-zinc-400 dark:text-zinc-500 text-xs">{label}</p>
+                  <p className="text-zinc-900 dark:text-white font-bold text-sm truncate">{txnLoading ? '…' : value}</p>
                 </div>
               </CardContent>
             </Card>
@@ -175,22 +181,27 @@ export default function AccountDetailPage() {
         </div>
 
         {/* ── Transaction History ── */}
-        <Card className="bg-slate-900/60 border-slate-800/60">
-          <CardHeader className="pb-4">
+        <Card className="bg-white dark:bg-zinc-950/80 border-zinc-200 dark:border-zinc-800/80 shadow-sm dark:shadow-none">
+          <CardHeader className="pb-4 border-b border-zinc-100 dark:border-zinc-900">
             <div className="flex items-center justify-between flex-wrap gap-3">
-              <CardTitle className="text-white text-lg">Transaction History</CardTitle>
+              <div>
+                <CardTitle className="text-zinc-900 dark:text-white text-lg font-bold">Transaction History</CardTitle>
+                <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-0.5">Paginated & audit-logged records</p>
+              </div>
               {/* Filter Pills */}
-              <div className="flex items-center gap-1 p-1 bg-slate-800/80 rounded-lg">
+              <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800">
                 {(['all', 'credit', 'debit'] as FilterType[]).map(f => (
                   <button
                     key={f}
                     onClick={() => setFilter(f)}
-                    className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                       filter === f
-                        ? f === 'credit' ? 'bg-emerald-600 text-white'
-                        : f === 'debit'  ? 'bg-red-600 text-white'
-                        : 'bg-indigo-600 text-white'
-                        : 'text-slate-400 hover:text-white'
+                        ? f === 'credit'
+                          ? 'bg-emerald-600 text-white shadow-sm'
+                          : f === 'debit'
+                          ? 'bg-red-600 text-white shadow-sm'
+                          : 'bg-red-600 text-white shadow-sm'
+                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                     }`}
                   >
                     {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -199,16 +210,16 @@ export default function AccountDetailPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             {txnLoading ? (
               <div className="space-y-3">
-                {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-16 rounded-xl bg-slate-800/60" />)}
+                {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-16 rounded-xl bg-zinc-200 dark:bg-zinc-900" />)}
               </div>
             ) : transactions.length === 0 ? (
               <div className="text-center py-16">
-                <Wallet className="w-10 h-10 text-slate-700 mx-auto mb-3" />
-                <p className="text-slate-400 text-sm">No {filter !== 'all' ? filter : ''} transactions found</p>
-                <Button size="sm" onClick={() => setShowAdd(true)} className="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white">
+                <Wallet className="w-10 h-10 text-zinc-300 dark:text-zinc-700 mx-auto mb-3" />
+                <p className="text-zinc-500 dark:text-zinc-400 text-sm">No {filter !== 'all' ? filter : ''} transactions found</p>
+                <Button size="sm" onClick={() => setShowAdd(true)} className="mt-4 bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/25">
                   <Plus className="w-4 h-4 mr-1.5" />Add Transaction
                 </Button>
               </div>
@@ -218,23 +229,23 @@ export default function AccountDetailPage() {
                   {transactions.map((txn, i) => (
                     <div key={txn.id}>
                       <TxnRow txn={txn} />
-                      {i < transactions.length - 1 && <Separator className="bg-slate-800/40 my-0.5" />}
+                      {i < transactions.length - 1 && <Separator className="bg-zinc-100 dark:bg-zinc-900 my-0.5" />}
                     </div>
                   ))}
                 </div>
 
                 {pagination && pagination.total_pages > 1 && (
-                  <div className="flex items-center justify-between mt-5 pt-5 border-t border-slate-800/60">
-                    <p className="text-slate-500 text-xs tabular-nums">
+                  <div className="flex items-center justify-between mt-5 pt-5 border-t border-zinc-100 dark:border-zinc-900">
+                    <p className="text-zinc-500 dark:text-zinc-400 text-xs tabular-nums">
                       {pagination.total_records} transactions · Page {pagination.page} of {pagination.total_pages}
                     </p>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" disabled={currentPage <= 1} onClick={() => handlePageChange(currentPage - 1)}
-                        className="border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700">
+                        className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800">
                         Previous
                       </Button>
                       <Button variant="outline" size="sm" disabled={currentPage >= pagination.total_pages} onClick={() => handlePageChange(currentPage + 1)}
-                        className="border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700">
+                        className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800">
                         Next
                       </Button>
                     </div>
@@ -259,31 +270,33 @@ export default function AccountDetailPage() {
 function TxnRow({ txn }: { txn: Transaction }) {
   const isCredit = txn.type === 'credit';
   return (
-    <div className="flex items-center gap-4 py-3.5 px-2 rounded-xl hover:bg-slate-800/30 transition-colors group">
+    <div className="flex items-center gap-4 py-3.5 px-3 rounded-xl hover:bg-zinc-100/70 dark:hover:bg-zinc-900/60 transition-colors group">
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
         isCredit ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-red-500/10 border border-red-500/20'
       }`}>
         {isCredit
-          ? <TrendingUp className="w-4 h-4 text-emerald-400" />
-          : <TrendingDown className="w-4 h-4 text-red-400" />
+          ? <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          : <TrendingDown className="w-4 h-4 text-red-600 dark:text-red-400" />
         }
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-white text-sm font-medium truncate">{txn.description}</p>
+        <p className="text-zinc-900 dark:text-white text-sm font-semibold truncate">{txn.description}</p>
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-          <code className="text-slate-500 text-xs truncate max-w-[180px]">{txn.reference_id}</code>
-          <span className="text-slate-700 text-xs">·</span>
-          <span className="text-slate-600 text-xs">{formatDate(txn.created_at)}</span>
+          <code className="text-zinc-400 dark:text-zinc-500 text-xs truncate max-w-[200px] font-mono">{txn.reference_id}</code>
+          <span className="text-zinc-300 dark:text-zinc-700 text-xs">·</span>
+          <span className="text-zinc-400 dark:text-zinc-500 text-xs">{formatDate(txn.created_at)}</span>
         </div>
       </div>
       <div className="text-right flex-shrink-0">
-        <p className={`font-bold text-sm tabular-nums ${isCredit ? 'text-emerald-400' : 'text-red-400'}`}>
+        <p className={`font-bold text-sm tabular-nums ${isCredit ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
           {isCredit ? '+' : '−'}{formatCurrency(Number(txn.amount))}
         </p>
         <Badge
           variant="outline"
-          className={`text-[10px] mt-1 px-1.5 py-0 ${
-            isCredit ? 'border-emerald-500/30 text-emerald-500' : 'border-red-500/30 text-red-500'
+          className={`text-[10px] mt-1 px-1.5 py-0 uppercase font-bold tracking-wider ${
+            isCredit
+              ? 'border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5'
+              : 'border-red-500/30 text-red-600 dark:text-red-400 bg-red-500/5'
           }`}
         >
           {txn.type}

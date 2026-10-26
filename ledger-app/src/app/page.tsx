@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import {
   Plus, ArrowRightLeft, TrendingUp, TrendingDown,
-  Wallet, Users, RefreshCw, BookOpen,
+  Wallet, Users, RefreshCw, Flame, ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -12,6 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CreateAccountModal } from '@/components/accounts/CreateAccountModal';
 import { TransferModal } from '@/components/transactions/TransferModal';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { UserAvatar } from '@/components/UserAvatar';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { Account, PaginationMeta } from '@/types';
 import { toast } from 'sonner';
@@ -68,31 +70,37 @@ export default function DashboardPage() {
   const positiveAccounts = statsPool.filter(a => Number(a.balance) > 0).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100 transition-colors duration-200">
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 border-b border-slate-800/60 bg-slate-900/70 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-zinc-200 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg">
-              <BookOpen className="w-4 h-4 text-white" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center shadow-lg shadow-red-600/25">
+              <Flame className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-white font-bold text-lg leading-none tracking-tight">LedgerFlow</h1>
-              <p className="text-slate-500 text-xs mt-0.5">Transaction Ledger API</p>
+              <div className="flex items-center gap-2">
+                <h1 className="text-zinc-900 dark:text-white font-bold text-lg leading-none tracking-tight">Ledgerly</h1>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-600/10 dark:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20">
+                  BLACK-RED
+                </span>
+              </div>
+              <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-0.5">Transaction Ledger System</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
+            <ThemeToggle />
             <Button
               variant="outline" size="sm"
               onClick={() => setShowTransfer(true)}
-              className="border-slate-700 bg-slate-800/60 text-slate-300 hover:bg-slate-700 hover:text-white hidden sm:flex"
+              className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 hover:border-red-300 dark:hover:border-red-900/50 hover:text-red-600 dark:hover:text-red-400 hidden sm:flex shadow-sm"
             >
-              <ArrowRightLeft className="w-4 h-4 mr-2" />Transfer
+              <ArrowRightLeft className="w-4 h-4 mr-2 text-red-500" />Transfer
             </Button>
             <Button
               size="sm"
               onClick={() => setShowCreate(true)}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/25 shadow-md"
+              className="bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/25 active:scale-[0.98]"
             >
               <Plus className="w-4 h-4 mr-1.5" />New Account
             </Button>
@@ -104,9 +112,9 @@ export default function DashboardPage() {
 
         {/* ── Stats ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard icon={<Users className="w-4 h-4" />}       label="Total Accounts"  value={loading ? null : String(pagination?.total_records ?? accounts.length)} color="indigo" />
+          <StatCard icon={<Users className="w-4 h-4" />}       label="Total Accounts"  value={loading ? null : String(pagination?.total_records ?? accounts.length)} color="red" />
           <StatCard icon={<Wallet className="w-4 h-4" />}      label="Total Balance"   value={loading ? null : formatCurrency(totalBalance)}                          color="emerald" />
-          <StatCard icon={<TrendingUp className="w-4 h-4" />}  label="Avg Balance"     value={loading ? null : accounts.length ? formatCurrency(totalBalance / accounts.length) : '₹0.00'} color="violet" />
+          <StatCard icon={<TrendingUp className="w-4 h-4" />}  label="Avg Balance"     value={loading ? null : accounts.length ? formatCurrency(totalBalance / (allAccounts.length || accounts.length)) : '₹0.00'} color="rose" />
           <StatCard icon={<TrendingDown className="w-4 h-4" />} label="Funded Accounts" value={loading ? null : String(positiveAccounts)} color="amber" />
         </div>
 
@@ -114,16 +122,16 @@ export default function DashboardPage() {
         <section>
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-white font-semibold text-xl">Accounts</h2>
+              <h2 className="text-zinc-900 dark:text-white font-bold text-xl tracking-tight">Accounts Directory</h2>
               {pagination && (
-                <p className="text-slate-500 text-sm mt-0.5">{pagination.total_records} account{pagination.total_records !== 1 ? 's' : ''} total</p>
+                <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-0.5">{pagination.total_records} account{pagination.total_records !== 1 ? 's' : ''} total</p>
               )}
             </div>
             <Button
               variant="ghost" size="sm"
               onClick={() => refreshAll(currentPage)}
               disabled={loading}
-              className="text-slate-400 hover:text-white"
+              className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh
@@ -133,7 +141,7 @@ export default function DashboardPage() {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[...Array(6)].map((_, i) => (
-                <Skeleton key={i} className="h-44 rounded-2xl bg-slate-800/60" />
+                <Skeleton key={i} className="h-44 rounded-2xl bg-zinc-200 dark:bg-zinc-900" />
               ))}
             </div>
           ) : accounts.length === 0 ? (
@@ -149,18 +157,18 @@ export default function DashboardPage() {
                     variant="outline" size="sm"
                     disabled={currentPage <= 1}
                     onClick={() => fetchAccounts(currentPage - 1)}
-                    className="border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700"
+                    className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                   >
                     Previous
                   </Button>
-                  <span className="text-slate-400 text-sm tabular-nums">
+                  <span className="text-zinc-500 dark:text-zinc-400 text-sm tabular-nums">
                     Page {currentPage} of {pagination.total_pages}
                   </span>
                   <Button
                     variant="outline" size="sm"
                     disabled={currentPage >= pagination.total_pages}
                     onClick={() => fetchAccounts(currentPage + 1)}
-                    className="border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700"
+                    className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                   >
                     Next
                   </Button>
@@ -181,26 +189,26 @@ export default function DashboardPage() {
 
 function StatCard({ label, value, icon, color }: {
   label: string; value: string | null; icon: React.ReactNode;
-  color: 'indigo' | 'emerald' | 'violet' | 'amber';
+  color: 'red' | 'emerald' | 'rose' | 'amber';
 }) {
   const palette = {
-    indigo:  'text-indigo-400  bg-indigo-500/10  border-indigo-500/25',
-    emerald: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/25',
-    violet:  'text-violet-400  bg-violet-500/10  border-violet-500/25',
-    amber:   'text-amber-400   bg-amber-500/10   border-amber-500/25',
+    red:     'text-red-600 dark:text-red-400 bg-red-500/10 border-red-500/25',
+    emerald: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/25',
+    rose:    'text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/25',
+    amber:   'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/25',
   };
   return (
-    <Card className="bg-slate-900/60 border-slate-800/60 backdrop-blur-sm">
+    <Card className="bg-white dark:bg-zinc-950/80 border-zinc-200 dark:border-zinc-800/80 shadow-sm dark:shadow-none backdrop-blur-sm">
       <CardContent className="p-5">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-slate-400 text-sm font-medium">{label}</span>
+          <span className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">{label}</span>
           <div className={`w-8 h-8 rounded-lg border flex items-center justify-center ${palette[color]}`}>
             {icon}
           </div>
         </div>
         {value === null
-          ? <Skeleton className="h-7 w-28 bg-slate-700" />
-          : <p className="text-white text-2xl font-bold tracking-tight">{value}</p>
+          ? <Skeleton className="h-7 w-28 bg-zinc-200 dark:bg-zinc-800" />
+          : <p className="text-zinc-900 dark:text-white text-2xl font-bold tracking-tight">{value}</p>
         }
       </CardContent>
     </Card>
@@ -211,35 +219,33 @@ function StatCard({ label, value, icon, color }: {
 
 function AccountCard({ account }: { account: Account }) {
   const balance = Number(account.balance);
-  const initials = account.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   return (
     <Link href={`/accounts/${account.id}`}>
-      <Card className="bg-slate-900/60 border-slate-800/60 hover:border-indigo-500/40 hover:bg-slate-800/80 transition-all duration-200 cursor-pointer group backdrop-blur-sm h-full">
+      <Card className="bg-white dark:bg-zinc-950/80 border-zinc-200 dark:border-zinc-800/80 hover:border-red-500/50 dark:hover:border-red-600/50 hover:shadow-lg hover:shadow-red-500/5 dark:hover:shadow-red-950/20 transition-all duration-200 cursor-pointer group h-full">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/25 flex items-center justify-center text-indigo-300 font-bold text-sm">
-              {initials}
-            </div>
-            <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 bg-emerald-500/5 text-xs">
+            <UserAvatar name={account.name} id={account.id} size="lg" />
+            <Badge variant="outline" className="border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 text-xs font-semibold">
               Active
             </Badge>
           </div>
-          <CardTitle className="text-white text-lg group-hover:text-indigo-300 transition-colors mt-3 leading-tight">
-            {account.name}
+          <CardTitle className="text-zinc-900 dark:text-white text-lg group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors mt-3 leading-tight flex items-center justify-between">
+            <span>{account.name}</span>
+            <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-red-600 dark:group-hover:text-red-400 group-hover:translate-x-0.5 transition-all" />
           </CardTitle>
-          <CardDescription className="text-slate-600 text-xs font-mono">
-            {account.id.split('-')[0].toUpperCase()}···
+          <CardDescription className="text-zinc-400 dark:text-zinc-500 text-xs font-mono">
+            ID: {account.id.split('-')[0].toUpperCase()}···
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="pt-3 border-t border-slate-800/60 flex items-end justify-between">
+          <div className="pt-3 border-t border-zinc-100 dark:border-zinc-900 flex items-end justify-between">
             <div>
-              <p className="text-slate-500 text-xs mb-1">Balance</p>
-              <p className={`text-xl font-bold tabular-nums ${balance > 0 ? 'text-emerald-400' : 'text-slate-500'}`}>
+              <p className="text-zinc-400 dark:text-zinc-500 text-xs mb-1">Balance</p>
+              <p className={`text-xl font-bold tabular-nums ${balance > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400 dark:text-zinc-500'}`}>
                 {formatCurrency(balance)}
               </p>
             </div>
-            <p className="text-slate-600 text-xs">{formatDate(account.created_at)}</p>
+            <p className="text-zinc-400 dark:text-zinc-500 text-xs">{formatDate(account.created_at)}</p>
           </div>
         </CardContent>
       </Card>
@@ -252,14 +258,14 @@ function AccountCard({ account }: { account: Account }) {
 function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center">
-      <div className="w-20 h-20 rounded-3xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-5">
-        <Wallet className="w-9 h-9 text-indigo-400" />
+      <div className="w-20 h-20 rounded-3xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-5">
+        <Wallet className="w-9 h-9 text-red-600 dark:text-red-400" />
       </div>
-      <h3 className="text-white text-xl font-semibold mb-2">No accounts yet</h3>
-      <p className="text-slate-400 text-sm mb-6 max-w-xs leading-relaxed">
+      <h3 className="text-zinc-900 dark:text-white text-xl font-bold mb-2">No accounts yet</h3>
+      <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-6 max-w-xs leading-relaxed">
         Create your first account to start tracking transactions and managing balances.
       </p>
-      <Button onClick={onCreateClick} className="bg-indigo-600 hover:bg-indigo-500 text-white">
+      <Button onClick={onCreateClick} className="bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/25">
         <Plus className="w-4 h-4 mr-2" />Create First Account
       </Button>
     </div>

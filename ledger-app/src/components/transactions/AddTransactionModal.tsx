@@ -104,27 +104,27 @@ export function AddTransactionModal({ open, onClose, accountId, onAdded }: Props
 
   return (
     <Dialog open={open} onOpenChange={o => { if (!o) handleClose(); }}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-white sm:max-w-md">
+      <DialogContent className="bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white sm:max-w-md shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-white text-lg">Add Transaction</DialogTitle>
-          <DialogDescription className="text-slate-400 text-sm">
+          <DialogTitle className="text-zinc-900 dark:text-white text-lg font-bold">Add Transaction</DialogTitle>
+          <DialogDescription className="text-zinc-500 dark:text-zinc-400 text-xs">
             Record a credit or debit on this account.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5 mt-2">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           {/* Type Toggle */}
           <div className="grid grid-cols-2 gap-2">
             {(['credit', 'debit'] as const).map(t => (
               <button
                 key={t} type="button"
                 onClick={() => set('type', t)}
-                className={`flex items-center justify-center gap-2.5 py-3 rounded-xl border text-sm font-semibold transition-all ${
+                className={`flex items-center justify-center gap-2.5 py-2.5 rounded-xl border text-sm font-semibold transition-all ${
                   form.type === t
                     ? t === 'credit'
-                      ? 'bg-emerald-500/15 border-emerald-500 text-emerald-300 shadow-emerald-500/10 shadow-lg'
-                      : 'bg-red-500/15 border-red-500 text-red-300 shadow-red-500/10 shadow-lg'
-                    : 'border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300'
+                      ? 'bg-emerald-500/15 border-emerald-500 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                      : 'bg-red-500/15 border-red-500 text-red-600 dark:text-red-400 shadow-sm'
+                    : 'border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700 hover:text-zinc-800 dark:hover:text-zinc-300'
                 }`}
               >
                 {t === 'credit'
@@ -138,63 +138,63 @@ export function AddTransactionModal({ open, onClose, accountId, onAdded }: Props
 
           {/* Amount */}
           <div className="space-y-1.5">
-            <Label className="text-slate-300 text-sm">Amount (₹)</Label>
+            <Label className="text-zinc-700 dark:text-zinc-300 text-sm">Amount (₹)</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">₹</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 font-medium">₹</span>
               <Input
                 type="number" step="0.01" min="0.01" placeholder="0.00"
                 value={form.amount}
                 onChange={e => set('amount', e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-600 focus-visible:ring-indigo-500 pl-7"
+                className="bg-zinc-50 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus-visible:ring-red-600 pl-7"
                 disabled={loading}
               />
             </div>
-            {errors.amount && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.amount}</p>}
+            {errors.amount && <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.amount}</p>}
           </div>
 
           {/* Description */}
           <div className="space-y-1.5">
-            <Label className="text-slate-300 text-sm">Description</Label>
+            <Label className="text-zinc-700 dark:text-zinc-300 text-sm">Description</Label>
             <Input
               placeholder="e.g. Salary deposit"
               value={form.description}
               onChange={e => set('description', e.target.value)}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-600 focus-visible:ring-indigo-500"
+              className="bg-zinc-50 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus-visible:ring-red-600"
               disabled={loading}
             />
-            {errors.description && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.description}</p>}
+            {errors.description && <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.description}</p>}
           </div>
 
           {/* Reference ID */}
           <div className="space-y-1.5">
-            <Label className="text-slate-300 text-sm">
+            <Label className="text-zinc-700 dark:text-zinc-300 text-sm">
               Reference ID
-              <span className="text-slate-600 font-normal ml-2 text-xs">(idempotency key)</span>
+              <span className="text-zinc-400 dark:text-zinc-500 font-normal ml-2 text-xs">(idempotency key)</span>
             </Label>
             <Input
               placeholder="e.g. TXN-2024-001"
               value={form.reference_id}
               onChange={e => set('reference_id', e.target.value)}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-600 focus-visible:ring-indigo-500 font-mono text-sm"
+              className="bg-zinc-50 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus-visible:ring-red-600 font-mono text-sm"
               disabled={loading}
             />
-            {errors.reference_id && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.reference_id}</p>}
+            {errors.reference_id && <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.reference_id}</p>}
           </div>
 
           {/* Actions */}
           <div className="flex gap-3 pt-1">
             <Button
               type="button" variant="outline" onClick={handleClose} disabled={loading}
-              className="flex-1 border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
+              className="flex-1 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white"
             >
               Cancel
             </Button>
             <Button
               type="submit" disabled={loading}
-              className={`flex-1 text-white font-semibold ${
+              className={`flex-1 text-white font-semibold shadow-md active:scale-[0.98] ${
                 form.type === 'credit'
-                  ? 'bg-emerald-600 hover:bg-emerald-500'
-                  : 'bg-red-600 hover:bg-red-500'
+                  ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/25'
+                  : 'bg-red-600 hover:bg-red-500 shadow-red-600/25'
               }`}
             >
               {loading
