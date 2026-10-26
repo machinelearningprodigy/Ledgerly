@@ -40,7 +40,7 @@ export function validationError(details: Record<string, string[]>) {
   return errorResponse('VALIDATION_ERROR', 'Validation failed', 400, { fields: details });
 }
 
-/** Parse any thrown error and return a consistent API response */
+/** Parse any thrown error (Error instance, PostgrestError plain object, or string) */
 export function handleApiError(error: unknown): NextResponse {
   console.error('[API Error]', error);
 
@@ -48,33 +48,53 @@ export function handleApiError(error: unknown): NextResponse {
     return errorResponse(error.code, error.message, error.statusCode, error.details);
   }
 
-  if (error instanceof Error) {
-    const msg = error.message;
+  let msg = '';
+  let details: Record<string, unknown> | undefined;
 
-    if (msg.includes('INSUFFICIENT_BALANCE:')) {
-      const clean = msg.split('INSUFFICIENT_BALANCE:')[1]?.trim() ?? msg;
-      return errorResponse('INSUFFICIENT_BALANCE', clean, 422);
+  if (error instanceof Error) {
+    msg = error.message;
+  } else if (typeof error === 'object' && error !== null) {
+    const errObj = error as Record<string, unknown>;
+    msg = String(errObj.message || errObj.error_description || errObj.error || errObj.details || '');
+    if (errObj.details && typeof errObj.details === 'object') {
+      details = errObj.details as Record<string, unknown>;
     }
-    if (msg.includes('ACCOUNT_NOT_FOUND:')) {
-      const clean = msg.split('ACCOUNT_NOT_FOUND:')[1]?.trim() ?? msg;
-      return errorResponse('ACCOUNT_NOT_FOUND', clean, 404);
-    }
-    if (msg.includes('SAME_ACCOUNT:')) {
-      return errorResponse('INVALID_TRANSFER', 'Cannot transfer to the same account', 400);
-    }
-    if (msg.includes('VALIDATION_ERROR:')) {
-      const clean = msg.split('VALIDATION_ERROR:')[1]?.trim() ?? msg;
-      return errorResponse('VALIDATION_ERROR', clean, 400);
-    }
-    // Supabase unique constraint violation
-    if (msg.includes('uq_account_reference') || msg.includes('duplicate key')) {
-      return errorResponse(
-        'DUPLICATE_TRANSACTION',
-        'A transaction with this reference_id already exists for this account',
-        409
-      );
-    }
+  } else {
+    msg = String(error);
   }
 
-  return errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+  if (msg.includes('INSUFFICIENT_BALANCE')) {
+    const clean = msg.includes('INSUFFICIENT_BALANCE:')
+      ? msg.split('INSUFFICIENT_BALANCE:')[1]?.trim()
+      : msg.replace(/.*INSUFFICIENT_BALANCE:?/, '').trim();
+    return errorResponse('INSUFFICIENT_BALANCE', clean || 'Insufficient balance for this operation', 422);
+  }
+
+  if (msg.includes('ACCOUNT_NOT_FOUND')) {
+    const clean = msg.includes('ACCOUNT_NOT_FOUND:')
+      ? msg.split('ACCOUNT_NOT_FOUND:')[1]?.trim()
+      : msg.replace(/.*ACCOUNT_NOT_FOUND:?/, '').trim();
+    return errorResponse('ACCOUNT_NOT_FOUND', clean || 'Account not found', 404);
+  }
+
+  if (msg.includes('SAME_ACCOUNT')) {
+    return errorResponse('INVALID_TRANSFER', 'Cannot transfer to the same account', 400);
+  }
+
+  if (msg.includes('VALIDATION_ERROR')) {
+    const clean = msg.includes('VALIDATION_ERROR:')
+      ? msg.split('VALIDATION_ERROR:')[1]?.trim()
+      : msg.replace(/.*VALIDATION_ERROR:?/, '').trim();
+    return errorResponse('VALIDATION_ERROR', clean || 'Validation failed', 400);
+  }
+
+  if (msg.includes('uq_account_reference') || msg.includes('duplicate key')) {
+    return errorResponse(
+      'DUPLICATE_TRANSACTION',
+      'A transaction with this reference_id already exists for this account',
+      409
+    );
+  }
+
+  return errorResponse('INTERNAL_ERROR', msg || 'An unexpected error occurred', 500, details);
 }

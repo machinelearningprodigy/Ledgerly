@@ -214,6 +214,28 @@ BEGIN
     RAISE EXCEPTION 'ACCOUNT_NOT_FOUND: Destination account not found';
   END IF;
 
+  -- Check if transfer already executed with this reference_id (idempotency)
+  SELECT * INTO v_debit_txn
+  FROM transactions
+  WHERE account_id = p_from_account_id AND reference_id = 'DEBIT-' || p_reference_id;
+
+  IF v_debit_txn.id IS NOT NULL THEN
+    SELECT * INTO v_credit_txn
+    FROM transactions
+    WHERE account_id = p_to_account_id AND reference_id = 'CREDIT-' || p_reference_id;
+
+    RETURN json_build_object(
+      'debit_transaction',  row_to_json(v_debit_txn),
+      'credit_transaction', row_to_json(v_credit_txn),
+      'from_account_id',    p_from_account_id,
+      'to_account_id',      p_to_account_id,
+      'amount',             p_amount,
+      'from_balance',       v_from_account.balance,
+      'to_balance',         v_to_account.balance,
+      'duplicate',          true
+    );
+  END IF;
+
   IF v_from_account.balance < p_amount THEN
     RAISE EXCEPTION 'INSUFFICIENT_BALANCE: Source account balance (%) is less than transfer amount (%)',
       v_from_account.balance, p_amount;

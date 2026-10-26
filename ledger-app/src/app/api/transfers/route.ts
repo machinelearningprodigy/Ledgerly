@@ -41,6 +41,18 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error;
 
+    const result = data as { duplicate?: boolean } | null;
+    if (result && result.duplicate) {
+      return NextResponse.json(
+        {
+          data,
+          message: 'Transfer with this reference_id already exists',
+          duplicate: true,
+        },
+        { status: 200 }
+      );
+    }
+
     return NextResponse.json({ data }, { status: 201 });
   } catch (err) {
     return handleApiError(err);

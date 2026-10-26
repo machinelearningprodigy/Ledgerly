@@ -69,8 +69,14 @@ export function TransferModal({ open, onClose, accounts, defaultFromId, onTransf
     if (!form.to_account_id)              e.to_account_id   = 'Destination account is required';
     if (form.from_account_id && form.to_account_id && form.from_account_id === form.to_account_id)
       e.to_account_id = 'Cannot transfer to the same account';
-    if (!form.amount || isNaN(Number(form.amount)) || Number(form.amount) <= 0)
+    if (!form.amount || isNaN(Number(form.amount)) || Number(form.amount) <= 0) {
       e.amount = 'Amount must be greater than 0';
+    } else {
+      const src = allAccounts.find(a => a.id === form.from_account_id);
+      if (src && Number(src.balance) < Number(form.amount)) {
+        e.amount = `Source account has insufficient balance (Current balance: ${formatCurrency(Number(src.balance))})`;
+      }
+    }
     if (!form.description.trim())         e.description   = 'Description is required';
     if (!form.reference_id.trim())        e.reference_id  = 'Reference ID is required';
     setErrors(e);
@@ -95,6 +101,14 @@ export function TransferModal({ open, onClose, accounts, defaultFromId, onTransf
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.message || 'Transfer failed');
+
+      if (json.duplicate) {
+        toast.warning('Transfer already exists', {
+          description: 'A transfer with this reference_id was already processed.',
+        });
+        handleClose();
+        return;
+      }
 
       const from = allAccounts.find(a => a.id === form.from_account_id);
       const to   = allAccounts.find(a => a.id === form.to_account_id);
