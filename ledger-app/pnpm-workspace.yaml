@@ -1,0 +1,6 @@
+allowBuilds:
+  unrs-resolver: true
+  napi-postinstall: true
+  sharp: true
+  esbuild: true
+strictDepBuilds: false
