@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Flame, LayoutDashboard, ArrowRightLeft, PlusCircle,
-  Code2, ShieldCheck, Database, CheckCircle2, ChevronRight, X,
+  Code2, ShieldCheck, Database, CheckCircle2, ChevronRight, X, BookOpen,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { UserAvatar } from '@/components/UserAvatar';
@@ -97,6 +97,19 @@ export function Sidebar({
             >
               <LayoutDashboard className="w-4 h-4" />
               <span>Accounts Directory</span>
+            </Link>
+
+            <Link
+              href="/docs"
+              onClick={onCloseMobile}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                pathname === '/docs'
+                  ? 'bg-red-600/10 text-red-600 dark:text-red-400 font-semibold border border-red-500/20'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:text-zinc-900 dark:hover:text-white'
+              }`}
+            >
+              <BookOpen className="w-4 h-4 text-red-500" />
+              <span>Documentation</span>
             </Link>
 
             {onOpenTransfer && (

@@ -2,9 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   ArrowLeft, Plus, ArrowRightLeft, TrendingUp, TrendingDown,
-  Hash, Wallet, Copy, CheckCheck, RefreshCw, Menu
+  Hash, Wallet, Copy, CheckCheck, RefreshCw, Menu, BookOpen
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -148,6 +149,14 @@ export default function AccountDetailPage() {
 
             <div className="flex items-center gap-2.5">
               <ThemeToggle className="lg:hidden" />
+              <Link href="/docs" className="hidden sm:inline-flex">
+                <Button
+                  variant="outline" size="sm"
+                  className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 hover:border-red-300 dark:hover:border-red-900/50 hover:text-red-600 dark:hover:text-red-400 shadow-sm"
+                >
+                  <BookOpen className="w-4 h-4 mr-1.5 text-red-500" />Docs
+                </Button>
+              </Link>
               <Button variant="ghost" size="sm" onClick={refresh} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
                 <RefreshCw className="w-4 h-4" />
               </Button>

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import {
   Plus, ArrowRightLeft, TrendingUp, TrendingDown,
-  Wallet, Users, RefreshCw, Flame, ChevronRight, Menu
+  Wallet, Users, RefreshCw, Flame, ChevronRight, Menu, BookOpen
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -108,6 +108,14 @@ export default function DashboardPage() {
 
             <div className="flex items-center gap-2.5">
               <ThemeToggle className="lg:hidden" />
+              <Link href="/docs" className="hidden sm:inline-flex">
+                <Button
+                  variant="outline" size="sm"
+                  className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 hover:border-red-300 dark:hover:border-red-900/50 hover:text-red-600 dark:hover:text-red-400 shadow-sm"
+                >
+                  <BookOpen className="w-4 h-4 mr-1.5 text-red-500" />Docs
+                </Button>
+              </Link>
               <Button
                 variant="outline" size="sm"
                 onClick={() => setShowTransfer(true)}
